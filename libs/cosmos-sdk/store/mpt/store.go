@@ -293,7 +293,13 @@ func (ms *MptStore) commitStorageWithDelta(storageDelta []*trie.StorageDelta, no
 			panic(err)
 		}
 		stateR, set, err := t.CommitWithDelta(storage.NodeDelta, false)
-		fmt.Printf("addr:%x, stateRoot:%x, newValue:%x\n", addrHash, stateRoot, stateR)
+		var outRoot []byte
+		for _, v := range storage.NodeDelta {
+			if v.Key == "root" {
+				outRoot = v.Val
+			}
+		}
+		fmt.Printf("stateRoot:%x, newValue:%x, outRoot:%x\n", stateRoot, stateR, outRoot)
 		if set != nil {
 			if err := nodeSets.Merge(set); err != nil {
 				panic("fail to commit trie data(storage nodeSets merge): " + err.Error())
@@ -311,12 +317,17 @@ func (ms *MptStore) commitStorageForDelta(nodeSets *trie.MergedNodeSet) []*trie.
 		}
 		key := AddressStoreKey(addr.Bytes())
 		preValue, err := ms.trie.TryGet(key)
-		addrHash := mpttype.Keccak256HashWithSyncPool(addr[:])
 		stateRoot := ms.retriever.GetAccStateRoot(preValue)
 
 		if err == nil { // maybe acc already been deleted
 			newValue := ms.retriever.ModifyAccStateRoot(preValue, stateR)
-			fmt.Printf("addr:%x, stateRoot:%x, newValue:%x\n", addrHash, stateRoot, stateR)
+			var outRoot []byte
+			for _, v := range outStorageDelta {
+				if v.Key == "root" {
+					outRoot = v.Val
+				}
+			}
+			fmt.Printf("stateRoot:%x, newValue:%x, outRoot:%x\n", stateRoot, stateR, outRoot)
 			if err := ms.trie.TryUpdate(key, newValue); err != nil {
 				panic(fmt.Errorf("unexcepted err:%v while update acc %s ", err, addr.String()))
 			}
@@ -342,11 +353,10 @@ func (ms *MptStore) commitStorage(nodeSets *trie.MergedNodeSet) {
 		}
 		key := AddressStoreKey(addr.Bytes())
 		preValue, err := ms.trie.TryGet(key)
-		addrHash := mpttype.Keccak256HashWithSyncPool(addr[:])
 		stateRoot := ms.retriever.GetAccStateRoot(preValue)
 		if err == nil { // maybe acc already been deleted
 			newValue := ms.retriever.ModifyAccStateRoot(preValue, stateR)
-			fmt.Printf("addr:%x, stateRoot:%x, newValue:%x\n", addrHash, stateRoot, stateR)
+			fmt.Printf("stateRoot:%x, newValue:%x\n", stateRoot, stateR)
 			if err := ms.trie.TryUpdate(key, newValue); err != nil {
 				panic(fmt.Errorf("unexcepted err:%v while update acc %s ", err, addr.String()))
 			}
