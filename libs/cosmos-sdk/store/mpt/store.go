@@ -305,6 +305,7 @@ func (ms *MptStore) commitStorageWithDelta(storageDelta []*trie.StorageDelta, no
 				panic("fail to commit trie data(storage nodeSets merge): " + err.Error())
 			}
 		}
+		delete(ms.storageTrieForWrite, addr)
 	}
 }
 

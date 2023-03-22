@@ -3,6 +3,7 @@ package baseapp
 import (
 	"encoding/json"
 	"fmt"
+	cosmost "github.com/okx/okbchain/libs/cosmos-sdk/store/types"
 	"os"
 	"sort"
 	"strconv"
@@ -223,6 +224,13 @@ func (app *BaseApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBloc
 
 	if app.endBlocker != nil {
 		res = app.endBlocker(app.deliverState.ctx, req)
+	}
+
+	if app.deliverState.ms != nil && app.deliverState.ctx.BlockHeader().Height == 100 {
+		app.deliverState.ms.IteratorCache(true, func(key string, value []byte, isDirty bool, isDelete bool, storeKey cosmost.StoreKey) bool {
+			fmt.Println(key, value)
+			return true
+		}, nil)
 	}
 
 	return
