@@ -287,11 +287,13 @@ func (ms *MptStore) commitStorageWithDelta(storageDelta []*trie.StorageDelta, no
 		addr := storage.Addr
 		addrHash := mpttype.Keccak256HashWithSyncPool(addr[:])
 		stateRoot := ms.retriever.GetAccStateRoot(storage.PreAcc)
+
 		t, err := ms.db.OpenStorageTrie(addrHash, stateRoot)
 		if err != nil {
 			panic(err)
 		}
-		_, set, err := t.CommitWithDelta(storage.NodeDelta, false)
+		stateR, set, err := t.CommitWithDelta(storage.NodeDelta, false)
+		fmt.Printf("addr:%x, stateRoot:%x, newValue:%x\n", addrHash, stateRoot, stateR)
 		if set != nil {
 			if err := nodeSets.Merge(set); err != nil {
 				panic("fail to commit trie data(storage nodeSets merge): " + err.Error())
@@ -309,8 +311,12 @@ func (ms *MptStore) commitStorageForDelta(nodeSets *trie.MergedNodeSet) []*trie.
 		}
 		key := AddressStoreKey(addr.Bytes())
 		preValue, err := ms.trie.TryGet(key)
+		addrHash := mpttype.Keccak256HashWithSyncPool(addr[:])
+		stateRoot := ms.retriever.GetAccStateRoot(preValue)
+
 		if err == nil { // maybe acc already been deleted
 			newValue := ms.retriever.ModifyAccStateRoot(preValue, stateR)
+			fmt.Printf("addr:%x, stateRoot:%x, newValue:%x\n", addrHash, stateRoot, stateR)
 			if err := ms.trie.TryUpdate(key, newValue); err != nil {
 				panic(fmt.Errorf("unexcepted err:%v while update acc %s ", err, addr.String()))
 			}
@@ -336,8 +342,11 @@ func (ms *MptStore) commitStorage(nodeSets *trie.MergedNodeSet) {
 		}
 		key := AddressStoreKey(addr.Bytes())
 		preValue, err := ms.trie.TryGet(key)
+		addrHash := mpttype.Keccak256HashWithSyncPool(addr[:])
+		stateRoot := ms.retriever.GetAccStateRoot(preValue)
 		if err == nil { // maybe acc already been deleted
 			newValue := ms.retriever.ModifyAccStateRoot(preValue, stateR)
+			fmt.Printf("addr:%x, stateRoot:%x, newValue:%x\n", addrHash, stateRoot, stateR)
 			if err := ms.trie.TryUpdate(key, newValue); err != nil {
 				panic(fmt.Errorf("unexcepted err:%v while update acc %s ", err, addr.String()))
 			}

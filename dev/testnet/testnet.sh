@@ -139,6 +139,7 @@ run() {
   okbchaind add-genesis-account 0x4C12e733e58819A1d3520f1E7aDCc614Ca20De64 900000000okb --home cache/node${index}/okbchaind
   okbchaind add-genesis-account 0x83D83497431C2D3FEab296a9fba4e5FaDD2f7eD0 900000000okb --home cache/node${index}/okbchaind
   okbchaind add-genesis-account 0x2Bd4AF0C1D0c2930fEE852D07bB9dE87D8C07044 900000000okb --home cache/node${index}/okbchaind
+  okbchaind add-genesis-account 0xDD343cb7a4Ef388694791787dfC8c5C77Da26aFf 900000000okb --home cache/node${index}/okbchaind
 
   LOG_LEVEL=main:info,*:error,consensus:error,state:info
 
@@ -156,7 +157,7 @@ run() {
     --rpc.laddr tcp://${IP}:${rpcport} \
     --log_level ${LOG_LEVEL} \
     --chain-id ${CHAIN_ID} \
-    --upload-delta=false \
+    --upload-delta=true \
     --enable-gid \
     --consensus.timeout_commit 3800ms \
     --enable-blockpart-ack=false \
