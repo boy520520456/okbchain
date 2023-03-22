@@ -299,7 +299,7 @@ func (ms *MptStore) commitStorageWithDelta(storageDelta []*trie.StorageDelta, no
 				outRoot = v.Val
 			}
 		}
-		fmt.Printf("stateRoot:%x, newValue:%x, outRoot:%x\n", stateRoot, stateR, outRoot)
+		fmt.Printf("stateRoot:%x, newValue:%x, inRoot:%x\n", stateRoot, stateR, outRoot)
 		if set != nil {
 			if err := nodeSets.Merge(set); err != nil {
 				panic("fail to commit trie data(storage nodeSets merge): " + err.Error())
