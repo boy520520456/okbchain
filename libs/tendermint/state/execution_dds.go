@@ -199,6 +199,7 @@ func (dc *DeltaContext) postApplyBlock(height int64, deltaInfo *DeltaInfo,
 
 		wdFunc := evmWatchDataManager.CreateWatchDataGenerator()
 		wasmWdFunc := wasmWatchDataManager.CreateWatchDataGenerator()
+		time.Sleep(time.Second)
 		go dc.uploadData(height, abciResponses, deltaMap, wdFunc, wasmWdFunc)
 
 	}
