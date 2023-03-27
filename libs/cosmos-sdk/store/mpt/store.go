@@ -321,7 +321,7 @@ func (ms *MptStore) commitStorageWithDelta(storageDelta []*trie.StorageDelta, no
 		if err != nil {
 			panic(err)
 		}
-		_, set, err := t.CommitWithDelta(storage.NodeDelta, false)
+		_, set, snapVal, err := t.CommitWithDelta(storage.NodeDelta, false)
 		if set != nil {
 			if err := nodeSets.Merge(set); err != nil {
 				panic("fail to commit trie data(storage nodeSets merge): " + err.Error())
@@ -393,6 +393,7 @@ func (ms *MptStore) CommitterCommit(inputDelta interface{}) (rootHash types.Comm
 
 	var root ethcmn.Hash
 	var set *trie.NodeSet
+	var snapVal *trie.SnapDelta
 	var err error
 	if applyDelta && inputDelta != nil {
 		delta, ok := inputDelta.(*trie.MptDelta)
@@ -400,7 +401,7 @@ func (ms *MptStore) CommitterCommit(inputDelta interface{}) (rootHash types.Comm
 			panic(fmt.Sprintf("wrong input delta of mpt. delta: %v", inputDelta))
 		}
 		ms.commitStorageWithDelta(delta.Storage, nodeSets)
-		root, set, err = ms.trie.CommitWithDelta(delta.NodeDelta, true)
+		root, set, snapVal, err = ms.trie.CommitWithDelta(delta.NodeDelta, true)
 	} else if produceDelta {
 		var outputNodeDelta []*trie.NodeDelta
 		outStorage := ms.commitStorageForDelta(nodeSets)
