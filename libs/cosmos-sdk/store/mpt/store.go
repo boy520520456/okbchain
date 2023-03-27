@@ -322,6 +322,7 @@ func (ms *MptStore) commitStorageWithDelta(storageDelta []*trie.StorageDelta, no
 			panic(err)
 		}
 		_, set, snapVal, err := t.CommitWithDelta(storage.NodeDelta, false)
+
 		if set != nil {
 			if err := nodeSets.Merge(set); err != nil {
 				panic("fail to commit trie data(storage nodeSets merge): " + err.Error())
