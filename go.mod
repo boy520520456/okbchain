@@ -13,7 +13,7 @@ require (
 	github.com/apolloconfig/agollo/v4 v4.0.8
 	github.com/bartekn/go-bip39 v0.0.0-20171116152956-a05967ea095d
 	github.com/bgentry/speakeasy v0.1.0
-	github.com/btcsuite/btcd v0.22.1
+	github.com/btcsuite/btcd v0.23.2
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/confio/ics23/go v0.7.0
 	github.com/cosmos/cosmos-proto v1.0.0-alpha7
